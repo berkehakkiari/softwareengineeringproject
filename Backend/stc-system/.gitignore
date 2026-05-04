@@ -1,0 +1,5 @@
+Backend/stc-system/target/
+Database/STC_Attendance_System.db
+.vscode/
+.idea/
+*.iml
