@@ -1,3 +1,4 @@
+C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\controller\LeaveRequestController.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\controller\TimesheetController.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\dao\EmployeeDAO.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\dao\LeaveRequestDAO.java
@@ -13,5 +14,7 @@ C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\model\Superv
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\model\Timesheet.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\model\User.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\model\WorkEntry.java
+C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\service\LeaveRequestService.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\service\TimesheetService.java
+C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\service\UserService.java
 C:\Users\angel\Desktop\STC\Backend\stc-system\src\main\java\com\stc\util\DatabaseConnection.java
