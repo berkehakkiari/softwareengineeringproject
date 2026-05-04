@@ -1,2 +1,6 @@
+com\stc\model\User.class
 com\stc\util\DatabaseConnection.class
 com\stc\Main.class
+com\stc\model\HrSpecialist.class
+com\stc\model\Supervisor.class
+com\stc\model\Employee.class
