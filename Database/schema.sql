@@ -1,3 +1,11 @@
+CREATE TABLE "User" (
+	"UserID"	INTEGER,
+	"Name"	TEXT,
+	"Email"	TEXT,
+	"Role"	TEXT,
+	PRIMARY KEY("UserID")
+)
+
 CREATE TABLE "Employee" (
 	"UserID"	INTEGER,
 	"flexTimeBalance"	REAL,
@@ -43,14 +51,6 @@ CREATE TABLE "TimeSheet" (
 	PRIMARY KEY("sheetID"),
 	FOREIGN KEY("employeeID") REFERENCES "Employee"("UserID"),
 	FOREIGN KEY("supervisorID") REFERENCES "Supervisor"("UserID")
-)
-
-CREATE TABLE "User" (
-	"UserID"	INTEGER,
-	"Name"	TEXT,
-	"Email"	TEXT,
-	"Role"	TEXT,
-	PRIMARY KEY("UserID")
 )
 
 CREATE TABLE "WorkEntry" (

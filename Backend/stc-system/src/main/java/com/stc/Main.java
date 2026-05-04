@@ -1,16 +1,18 @@
 package com.stc;
 
-import com.stc.util.DatabaseConnection;
-import java.sql.Connection;
+import com.stc.dao.UserDAO;
+import com.stc.model.User;
 
 public class Main {
     public static void main(String[] args) {
-        Connection conn = DatabaseConnection.getConnection();
-        if (conn != null) {
-            System.out.println("SUCCESS - Database is connected!");
-            DatabaseConnection.closeConnection();
-        } else {
-            System.out.println("FAILED - Could not connect to database.");
-        }
+        UserDAO UserDAO = new UserDAO();
+
+        // Add a test user
+        User user = new User(1, "Angel", "angel@stc.com", "EMPLOYEE");
+        UserDAO.addUser(user);
+
+        // Retrieve and print it
+        User retrieved = UserDAO.getUserByID(1);
+        System.out.println(retrieved);
     }
 }
