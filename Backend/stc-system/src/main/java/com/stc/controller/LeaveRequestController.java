@@ -11,6 +11,14 @@ public class LeaveRequestController {
         service.submitLeaveRequest(employeeID, supervisorID, startDate, endDate, type);
     }
 
+    public void cancel(int leaveID) {
+        service.cancelLeaveRequest(leaveID);
+    }
+
+    public void registerSickness(int employeeID, int supervisorID, String startDate, String endDate) {
+        service.registerSickness(employeeID, supervisorID, startDate, endDate);
+    }
+
     public void approve(int leaveID) {
         service.approveLeaveRequest(leaveID);
     }

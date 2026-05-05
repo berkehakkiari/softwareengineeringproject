@@ -97,6 +97,19 @@ public class LeaveRequestDAO {
         return requests;
     }
 
+    public void updateType(int leaveID, String type) {
+        String sql = "UPDATE LeaveRequest SET type = ? WHERE leaveID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, type);
+            stmt.setInt(2, leaveID);
+            stmt.executeUpdate();
+            System.out.println("Leave type updated to: " + type);
+        } catch (SQLException e) {
+            System.out.println("Error updating leave type: " + e.getMessage());
+        }
+    }
+
     public void updateStatus(int leaveID, String status) {
         String sql = "UPDATE LeaveRequest SET status = ? WHERE leaveID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
