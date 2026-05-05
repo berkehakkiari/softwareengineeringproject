@@ -95,4 +95,20 @@ public class EmployeeDAO {
             System.out.println("Error updating employee: " + e.getMessage());
         }
     }
+
+    public void deleteEmployee(int userID) {
+        String sqlEmployee = "DELETE FROM Employee WHERE UserID = ?";
+        String sqlUser = "DELETE FROM User WHERE UserID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtEmployee = conn.prepareStatement(sqlEmployee);
+             PreparedStatement stmtUser = conn.prepareStatement(sqlUser)) {
+            stmtEmployee.setInt(1, userID);
+            stmtEmployee.executeUpdate();
+            stmtUser.setInt(1, userID);
+            stmtUser.executeUpdate();
+            System.out.println("Employee deleted.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting employee: " + e.getMessage());
+        }
+    }
 }

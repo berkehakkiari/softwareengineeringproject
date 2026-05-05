@@ -73,6 +73,11 @@ public class TimesheetDAO {
         return sheets;
     }
 
+    // Alias for REST API compatibility
+    public List<Timesheet> getTimesheetsByEmployeeID(int employeeID) {
+        return getTimesheetsByEmployee(employeeID);
+    }
+
     public List<Timesheet> getTimesheetsBySupervisor(int supervisorID) {
         List<Timesheet> sheets = new ArrayList<>();
         String sql = "SELECT * FROM Timesheet WHERE supervisorID = ? AND status = 'LOCKED'";
@@ -93,6 +98,34 @@ public class TimesheetDAO {
             }
         } catch (SQLException e) {
             System.out.println("Error getting Timesheets: " + e.getMessage());
+        }
+        return sheets;
+    }
+
+    // Alias for REST API compatibility
+    public List<Timesheet> getTimesheetsBySupervisorID(int supervisorID) {
+        return getTimesheetsBySupervisor(supervisorID);
+    }
+
+    public List<Timesheet> getAllTimesheets() {
+        List<Timesheet> sheets = new ArrayList<>();
+        String sql = "SELECT * FROM Timesheet";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                sheets.add(new Timesheet(
+                    rs.getInt("sheetID"),
+                    rs.getInt("employeeID"),
+                    rs.getInt("supervisorID"),
+                    rs.getInt("month"),
+                    rs.getInt("year"),
+                    rs.getDouble("totalHours"),
+                    rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting all Timesheets: " + e.getMessage());
         }
         return sheets;
     }

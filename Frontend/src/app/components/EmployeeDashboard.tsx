@@ -34,6 +34,10 @@ interface Props {
   onSubmitTimesheet: (timesheet: Timesheet) => void;
   onSubmitVacation: (vacation: VacationRequest) => void;
   onUpdateTimesheet: (id: string, updates: Partial<Timesheet>) => void;
+  loggedInUser?: {
+    fullName: string;
+    userId: number;
+  };
 }
 
 export function EmployeeDashboard({
@@ -42,6 +46,7 @@ export function EmployeeDashboard({
   onSubmitTimesheet,
   onSubmitVacation,
   onUpdateTimesheet,
+  loggedInUser,
 }: Props) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showVacationModal, setShowVacationModal] = useState(false);
@@ -89,8 +94,8 @@ export function EmployeeDashboard({
     <div className="space-y-8">
       {/* Employee Info */}
       <div>
-        <h2 className="text-2xl text-neutral-900">Welcome back, Sophie Harman</h2>
-        <p className="text-neutral-600 mt-1">Employee ID: EMP-2847</p>
+        <h2 className="text-2xl text-neutral-900">Welcome back, {loggedInUser?.fullName || 'Employee'}</h2>
+        <p className="text-neutral-600 mt-1">Employee ID: EMP-{loggedInUser?.userId || '0000'}</p>
       </div>
 
       {/* Flex Time Balance */}

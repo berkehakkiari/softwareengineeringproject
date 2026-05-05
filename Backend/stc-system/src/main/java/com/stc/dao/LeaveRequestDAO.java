@@ -73,6 +73,11 @@ public class LeaveRequestDAO {
         return requests;
     }
 
+    // Alias for REST API compatibility
+    public List<LeaveRequest> getRequestsByEmployeeID(int employeeID) {
+        return getLeaveRequestsByEmployee(employeeID);
+    }
+
     public List<LeaveRequest> getPendingRequestsBySupervisor(int supervisorID) {
         List<LeaveRequest> requests = new ArrayList<>();
         String sql = "SELECT * FROM LeaveRequest WHERE supervisorID = ? AND status = 'PENDING'";
@@ -93,6 +98,34 @@ public class LeaveRequestDAO {
             }
         } catch (SQLException e) {
             System.out.println("Error getting pending requests: " + e.getMessage());
+        }
+        return requests;
+    }
+
+    // Alias for REST API compatibility
+    public List<LeaveRequest> getPendingRequestsBySupervisorID(int supervisorID) {
+        return getPendingRequestsBySupervisor(supervisorID);
+    }
+
+    public List<LeaveRequest> getAllLeaveRequests() {
+        List<LeaveRequest> requests = new ArrayList<>();
+        String sql = "SELECT * FROM LeaveRequest";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                requests.add(new LeaveRequest(
+                    rs.getInt("leaveID"),
+                    rs.getInt("employeeID"),
+                    rs.getInt("supervisorID"),
+                    rs.getString("startDate"),
+                    rs.getString("endDate"),
+                    rs.getString("type"),
+                    rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting all leave requests: " + e.getMessage());
         }
         return requests;
     }

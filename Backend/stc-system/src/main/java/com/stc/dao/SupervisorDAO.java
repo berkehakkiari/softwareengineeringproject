@@ -72,4 +72,39 @@ public class SupervisorDAO {
         }
         return supervisors;
     }
+
+    public void updateSupervisor(Supervisor supervisor) {
+        String sqlUser = "UPDATE User SET Name = ?, Email = ? WHERE UserID = ?";
+        String sqlSupervisor = "UPDATE Supervisor SET Department = ? WHERE UserID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtUser = conn.prepareStatement(sqlUser);
+             PreparedStatement stmtSupervisor = conn.prepareStatement(sqlSupervisor)) {
+            stmtUser.setString(1, supervisor.getName());
+            stmtUser.setString(2, supervisor.getEmail());
+            stmtUser.setInt(3, supervisor.getUserID());
+            stmtUser.executeUpdate();
+            stmtSupervisor.setInt(1, supervisor.getDepartment());
+            stmtSupervisor.setInt(2, supervisor.getUserID());
+            stmtSupervisor.executeUpdate();
+            System.out.println("Supervisor updated.");
+        } catch (SQLException e) {
+            System.out.println("Error updating supervisor: " + e.getMessage());
+        }
+    }
+
+    public void deleteSupervisor(int userID) {
+        String sqlSupervisor = "DELETE FROM Supervisor WHERE UserID = ?";
+        String sqlUser = "DELETE FROM User WHERE UserID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtSupervisor = conn.prepareStatement(sqlSupervisor);
+             PreparedStatement stmtUser = conn.prepareStatement(sqlUser)) {
+            stmtSupervisor.setInt(1, userID);
+            stmtSupervisor.executeUpdate();
+            stmtUser.setInt(1, userID);
+            stmtUser.executeUpdate();
+            System.out.println("Supervisor deleted.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting supervisor: " + e.getMessage());
+        }
+    }
 }
