@@ -327,7 +327,7 @@ export function EmployeeDashboard({
                   step="0.5"
                   value={hoursWorked}
                   onChange={(e) => setHoursWorked(e.target.value)}
-                  placeholder="40.0"
+                  placeholder="160.0"
                   className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -386,7 +386,7 @@ export function EmployeeDashboard({
                         employeeId: 'EMP-2847',
                         weekPeriod: selectedWeek,
                         hoursSubmitted: parseFloat(hoursWorked),
-                        standardHours: 40.0,
+                        standardHours: 160.0,
                         submittedDate: 'Apr 13, 2026',
                         status: 'pending',
                         notes: timesheetNotes || undefined,
