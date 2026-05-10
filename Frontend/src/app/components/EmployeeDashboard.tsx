@@ -65,6 +65,22 @@ export function EmployeeDashboard({
   
   const [vacationDaysRequested, setVacationDaysRequested] = useState(0);
   
+  // Calculate total days used from approved vacation requests
+  const calculateApprovedDaysUsed = (): number => {
+    return vacationRequests
+      .filter(request => request.status === 'approved')
+      .reduce((total, request) => total + request.totalDays, 0);
+  };
+  
+  // Calculate remaining vacation days
+  const calculateRemainingDays = (): number => {
+    const usedDays = calculateApprovedDaysUsed();
+    return TOTAL_AVAILABLE_DAYS - usedDays;
+  };
+  
+  const remainingVacationDays = calculateRemainingDays();
+  const usedVacationDays = calculateApprovedDaysUsed();
+  
   // Calculate vacation days between two dates (inclusive)
   const calculateVacationDays = (startDate: string, endDate: string): number => {
     if (!startDate || !endDate) return 0;
@@ -149,21 +165,16 @@ export function EmployeeDashboard({
           <h3 className="text-lg text-neutral-900">Vacation Days</h3>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="text-center p-4 bg-neutral-50 rounded-lg">
-            <p className="text-sm text-neutral-500 mb-1">Current Year (2026)</p>
-            <p className="text-3xl text-neutral-900">{CURRENT_YEAR_DAYS}</p>
-            <p className="text-xs text-neutral-500 mt-1">of 30 days remaining</p>
-          </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <p className="text-sm text-green-700 mb-1">Rollover Days</p>
-            <p className="text-3xl text-green-700">{ROLLOVER_DAYS}</p>
-            <p className="text-xs text-green-600 mt-1">until Feb 2027</p>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="text-center p-4 bg-orange-50 rounded-lg">
+            <p className="text-sm text-orange-700 mb-1">Used (Approved)</p>
+            <p className="text-3xl text-orange-700">{usedVacationDays}</p>
+            <p className="text-xs text-orange-600 mt-1">days</p>
           </div>
           <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-700 mb-1">Total Available</p>
-            <p className="text-3xl text-blue-700">{TOTAL_AVAILABLE_DAYS}</p>
-            <p className="text-xs text-blue-600 mt-1">days</p>
+            <p className="text-sm text-blue-700 mb-1">Remaining</p>
+            <p className="text-3xl text-blue-700">{remainingVacationDays}</p>
+            <p className="text-xs text-blue-600 mt-1">days available</p>
           </div>
         </div>
 
@@ -399,8 +410,8 @@ export function EmployeeDashboard({
                       // Submit new timesheet
                       const newTimesheet: Timesheet = {
                         id: `TS-${Date.now()}`,
-                        employeeName: 'Sophie Harman',
-                        employeeId: 'EMP-2847',
+                        employeeName: loggedInUser?.fullName || 'Employee',
+                        employeeId: 'EMP-' + loggedInUser?.userId,
                         weekPeriod: selectedWeek,
                         hoursSubmitted: parseFloat(hoursWorked),
                         standardHours: 160.0,
@@ -457,18 +468,18 @@ export function EmployeeDashboard({
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
-                    <p className="text-xs text-blue-700 mb-1">Current Year</p>
-                    <p className="text-2xl text-blue-900">{CURRENT_YEAR_DAYS}</p>
+                    <p className="text-xs text-blue-700 mb-1">Total</p>
+                    <p className="text-2xl text-blue-900">{TOTAL_AVAILABLE_DAYS}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-blue-700 mb-1">Rollover</p>
-                    <p className="text-2xl text-blue-900">{ROLLOVER_DAYS}</p>
+                    <p className="text-xs text-blue-700 mb-1">Used</p>
+                    <p className="text-2xl text-blue-900">{usedVacationDays}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                   <div className="text-center bg-blue-100 rounded-lg py-1">
-                    <p className="text-xs text-blue-700 mb-1">Total Available</p>
-                    <p className="text-2xl text-blue-900">{TOTAL_AVAILABLE_DAYS}</p>
+                    <p className="text-xs text-blue-700 mb-1">Remaining</p>
+                    <p className="text-2xl text-blue-900">{remainingVacationDays}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                 </div>
@@ -487,7 +498,7 @@ export function EmployeeDashboard({
                 </label>
                 <input
                   type="date"
-                  min="2026-01-01"
+                  min="2026-05-10"
                   value={vacationStartDate}
                   onChange={(e) => {
                     setVacationStartDate(e.target.value);
@@ -505,7 +516,7 @@ export function EmployeeDashboard({
                 </label>
                 <input
                   type="date"
-                  min={vacationStartDate || '2026-01-01'}
+                  min={vacationStartDate || '2026-05-10'}
                   value={vacationEndDate}
                   onChange={(e) => {
                     setVacationEndDate(e.target.value);
@@ -520,18 +531,18 @@ export function EmployeeDashboard({
               {/* Days Requested Preview */}
               {vacationDaysRequested > 0 && (
                 <div className={`rounded-lg p-3 ${
-                  vacationDaysRequested > TOTAL_AVAILABLE_DAYS
+                  vacationDaysRequested > remainingVacationDays
                     ? 'bg-red-50 border border-red-200'
                     : 'bg-green-50 border border-green-200'
                 }`}>
                   <p className={`text-sm ${
-                    vacationDaysRequested > TOTAL_AVAILABLE_DAYS
+                    vacationDaysRequested > remainingVacationDays
                       ? 'text-red-700'
                       : 'text-green-700'
                   }`}>
-                    Days Requested: <strong>{vacationDaysRequested}</strong> / {TOTAL_AVAILABLE_DAYS}
-                    {vacationDaysRequested > TOTAL_AVAILABLE_DAYS && (
-                      <span className="block mt-1">⚠️ Exceeds available days by {vacationDaysRequested - TOTAL_AVAILABLE_DAYS}</span>
+                    Days Requested: <strong>{vacationDaysRequested}</strong> / {remainingVacationDays}
+                    {vacationDaysRequested > remainingVacationDays && (
+                      <span className="block mt-1">⚠️ Exceeds available days by {vacationDaysRequested - remainingVacationDays}</span>
                     )}
                   </p>
                 </div>
@@ -599,9 +610,9 @@ export function EmployeeDashboard({
 
                     const diffDays = calculateVacationDays(vacationStartDate, vacationEndDate);
                     
-                    // Validate against available vacation days
-                    if (diffDays > TOTAL_AVAILABLE_DAYS) {
-                      setDateError(`You have requested ${diffDays} days but only ${TOTAL_AVAILABLE_DAYS} days are available. Please select fewer days.`);
+                    // Validate against remaining vacation days
+                    if (diffDays > remainingVacationDays) {
+                      setDateError(`You have requested ${diffDays} days but only ${remainingVacationDays} days are remaining. Please select fewer days.`);
                       return;
                     }
 
@@ -610,8 +621,8 @@ export function EmployeeDashboard({
 
                     const newVacation: VacationRequest = {
                       id: `VR-${Date.now()}`,
-                      employeeName: 'Sophie Harman',
-                      employeeId: 'EMP-2847',
+                      employeeName: loggedInUser?.fullName || 'Employee',
+                      employeeId: 'EMP-' + loggedInUser?.userId,
                       startDate: vacationStartDate,
                       endDate: vacationEndDate,
                       vacationType,
