@@ -57,6 +57,23 @@ export function EmployeeDashboard({
   const [hoursWorked, setHoursWorked] = useState('');
   const [timesheetNotes, setTimesheetNotes] = useState('');
   const [editingTimesheet, setEditingTimesheet] = useState<Timesheet | null>(null);
+  
+  // Vacation balance constants
+  const CURRENT_YEAR_DAYS = 25;
+  const ROLLOVER_DAYS = 3;
+  const TOTAL_AVAILABLE_DAYS = CURRENT_YEAR_DAYS + ROLLOVER_DAYS;
+  
+  const [vacationDaysRequested, setVacationDaysRequested] = useState(0);
+  
+  // Calculate vacation days between two dates (inclusive)
+  const calculateVacationDays = (startDate: string, endDate: string): number => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+  };
 
   // Generate available months (past months only, up to current month)
   const getAvailableMonths = () => {
@@ -135,17 +152,17 @@ export function EmployeeDashboard({
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="text-center p-4 bg-neutral-50 rounded-lg">
             <p className="text-sm text-neutral-500 mb-1">Current Year (2026)</p>
-            <p className="text-3xl text-neutral-900">25</p>
+            <p className="text-3xl text-neutral-900">{CURRENT_YEAR_DAYS}</p>
             <p className="text-xs text-neutral-500 mt-1">of 30 days remaining</p>
           </div>
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <p className="text-sm text-green-700 mb-1">Rollover Days</p>
-            <p className="text-3xl text-green-700">3</p>
+            <p className="text-3xl text-green-700">{ROLLOVER_DAYS}</p>
             <p className="text-xs text-green-600 mt-1">until Feb 2027</p>
           </div>
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700 mb-1">Total Available</p>
-            <p className="text-3xl text-blue-700">28</p>
+            <p className="text-3xl text-blue-700">{TOTAL_AVAILABLE_DAYS}</p>
             <p className="text-xs text-blue-600 mt-1">days</p>
           </div>
         </div>
@@ -422,6 +439,7 @@ export function EmployeeDashboard({
                   setShowVacationModal(false);
                   setVacationStartDate('');
                   setVacationEndDate('');
+                  setVacationDaysRequested(0);
                   setDateError('');
                 }}
                 className="text-neutral-400 hover:text-neutral-600"
@@ -440,17 +458,17 @@ export function EmployeeDashboard({
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
                     <p className="text-xs text-blue-700 mb-1">Current Year</p>
-                    <p className="text-2xl text-blue-900">25</p>
+                    <p className="text-2xl text-blue-900">{CURRENT_YEAR_DAYS}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-blue-700 mb-1">Rollover</p>
-                    <p className="text-2xl text-blue-900">3</p>
+                    <p className="text-2xl text-blue-900">{ROLLOVER_DAYS}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                   <div className="text-center bg-blue-100 rounded-lg py-1">
                     <p className="text-xs text-blue-700 mb-1">Total Available</p>
-                    <p className="text-2xl text-blue-900">28</p>
+                    <p className="text-2xl text-blue-900">{TOTAL_AVAILABLE_DAYS}</p>
                     <p className="text-xs text-blue-600 mt-0.5">days</p>
                   </div>
                 </div>
@@ -473,6 +491,8 @@ export function EmployeeDashboard({
                   value={vacationStartDate}
                   onChange={(e) => {
                     setVacationStartDate(e.target.value);
+                    setVacationEndDate('');
+                    setVacationDaysRequested(0);
                     setDateError('');
                   }}
                   className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -490,10 +510,32 @@ export function EmployeeDashboard({
                   onChange={(e) => {
                     setVacationEndDate(e.target.value);
                     setDateError('');
+                    const daysRequested = calculateVacationDays(vacationStartDate, e.target.value);
+                    setVacationDaysRequested(daysRequested);
                   }}
                   className="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
+
+              {/* Days Requested Preview */}
+              {vacationDaysRequested > 0 && (
+                <div className={`rounded-lg p-3 ${
+                  vacationDaysRequested > TOTAL_AVAILABLE_DAYS
+                    ? 'bg-red-50 border border-red-200'
+                    : 'bg-green-50 border border-green-200'
+                }`}>
+                  <p className={`text-sm ${
+                    vacationDaysRequested > TOTAL_AVAILABLE_DAYS
+                      ? 'text-red-700'
+                      : 'text-green-700'
+                  }`}>
+                    Days Requested: <strong>{vacationDaysRequested}</strong> / {TOTAL_AVAILABLE_DAYS}
+                    {vacationDaysRequested > TOTAL_AVAILABLE_DAYS && (
+                      <span className="block mt-1">⚠️ Exceeds available days by {vacationDaysRequested - TOTAL_AVAILABLE_DAYS}</span>
+                    )}
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm text-neutral-700 mb-2">
@@ -527,6 +569,7 @@ export function EmployeeDashboard({
                     setShowVacationModal(false);
                     setVacationStartDate('');
                     setVacationEndDate('');
+                    setVacationDaysRequested(0);
                     setDateError('');
                   }}
                   className="flex-1 px-4 py-3 border border-neutral-200 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-colors"
@@ -554,10 +597,13 @@ export function EmployeeDashboard({
                       return;
                     }
 
-                    const start = new Date(vacationStartDate);
-                    const end = new Date(vacationEndDate);
-                    const diffTime = Math.abs(end.getTime() - start.getTime());
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    const diffDays = calculateVacationDays(vacationStartDate, vacationEndDate);
+                    
+                    // Validate against available vacation days
+                    if (diffDays > TOTAL_AVAILABLE_DAYS) {
+                      setDateError(`You have requested ${diffDays} days but only ${TOTAL_AVAILABLE_DAYS} days are available. Please select fewer days.`);
+                      return;
+                    }
 
                     const vacationType = (document.querySelector('select') as HTMLSelectElement)?.value || 'Annual Leave';
                     const reason = (document.getElementById('vacation-reason') as HTMLTextAreaElement)?.value;
@@ -579,6 +625,7 @@ export function EmployeeDashboard({
                     setShowVacationModal(false);
                     setVacationStartDate('');
                     setVacationEndDate('');
+                    setVacationDaysRequested(0);
                     setDateError('');
                     alert('Vacation request submitted successfully!');
                   }}
